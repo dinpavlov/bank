@@ -14,3 +14,25 @@ class Account(models.Model):
 
     def __str__(self):
         return self.id
+
+class Transfer(models.Model):
+
+    from_account = models.ForeignKey(
+        Account,
+        on_delete=models.CASCADE,
+        related_name='from_account'
+    )
+
+    to_account = models.ForeignKey(
+        Account,
+        on_delete=models.CASCADE,
+        related_name='to_account'
+    )
+
+    amount = models.DecimalField(
+        max_digits=12,
+        decimal_places=2
+    )
+
+    def __str__(self):
+        return self.id

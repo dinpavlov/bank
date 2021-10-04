@@ -44,3 +44,37 @@ class AccountApiTests(APITestCase):
         account = Account.objects.get(id=res.data['id'])
         for key in data.keys():
             self.assertEqual(data[key], getattr(account, key))
+
+class TransferApiTests(APITestCase):
+    """Test authenticated API access"""
+
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            email='banktest@bank.com',
+            password='testpass1_1',
+            username='test_1'
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+        self.from_overdraft_account = Account.objects.create(
+            account_name = 'test_from_account',
+            overdraft=True
+            )
+        self.to_account = Account.objects.create(
+            account_name = 'test_to_account',
+            overdraft=False
+            )
+        self.amount = 1000
+
+    def test_transfer_from_overdraft(self):
+        payload = {
+            "from_account": self.from_overdraft_account.id,
+            "to_account": self.to_account.id,
+            "amount": self.amount
+            }
+        res = self.client.post(reverse('billing:transfer_create'), payload)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        to_account = Account.objects.get(id=self.to_account.id)
+        from_overdraft_account = Account.objects.get(id=self.from_overdraft_account.id)
+        self.assertEqual(self.to_account.balance + self.amount, to_account.balance)
+        self.assertEqual(self.from_overdraft_account.balance - self.amount, from_overdraft_account.balance)

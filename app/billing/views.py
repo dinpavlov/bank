@@ -33,3 +33,4 @@ def transfer_create(request):
             return Response({'transfer status': 'Successfull'}, status = status.HTTP_200_OK)
         except ValueError:
             return Response({'transfer status': 'Unsuccessfull'}, status = status.HTTP_400_BAD_REQUEST)
+            

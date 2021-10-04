@@ -2,7 +2,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Account
-from .serializers import AccountSerializer
+from .serializers import AccountSerializer, TransferSerializer
+from .services import make_transfer
 
 
 @api_view(['GET'])
@@ -24,4 +25,11 @@ def account_create(request):
 
 @api_view(['POST'])
 def transfer_create(request):
-    return Response('transfer create endpoint')
+    data = request.data
+    serializer = TransferSerializer(data=data)
+    if serializer.is_valid(raise_exception=True):
+        try:
+            make_transfer(**serializer.validated_data)
+            return Response({'transfer status': 'Successfull'}, status = status.HTTP_200_OK)
+        except ValueError:
+            return Response({'transfer status': 'Unsuccessfull'}, status = status.HTTP_400_BAD_REQUEST)

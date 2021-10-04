@@ -21,3 +21,7 @@ def account_create(request):
     if serializer.is_valid(raise_exception=True):
         serializer.save()
     return Response({'id': serializer.data['id']}, status=status.HTTP_201_CREATED)
+
+@api_view(['POST'])
+def transfer_create(request):
+    return Response('transfer create endpoint')

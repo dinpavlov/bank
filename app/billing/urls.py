@@ -6,4 +6,5 @@ app_name = 'billing'
 urlpatterns = [
     path('account/', views.account_create, name='account_create'),
     path('account/<int:id>/', views.account_get, name='account_get'),
+    path('transfer/', views.transfer_create, name='transfer_create'),
 ]
